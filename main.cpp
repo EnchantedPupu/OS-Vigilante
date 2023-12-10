@@ -15,8 +15,8 @@ struct Job{
 	int interrupt;
 };
 
-ifstream openFile(string filename) {
-	filename = filename + ".csv";
+ifstream openJobFile(string filename) {
+	filename = "jobs/" + filename + ".csv";
 	//csv format
 	//top 2 lines are Job number, Arrival time
 	//the rest contains 2 inputs
@@ -33,21 +33,28 @@ ifstream openFile(string filename) {
 	return file;
 }
 
-void readJob(ifstream file){
+Job readJob(ifstream file) {
+	Job job;
 	string text;
 	while (getline (file, text)) {
 		// Output the text from the file
 		cout << text;
 		cout << endl;
+	}
+	return job;
 }
-}
+
 
 int main() {
 	const int JOBS = 1; //MAX IS 30
+	string text;
+
 	Job job[JOBS];
 
-	//read file
-	readJob(openFile("1"));
+	for(int i = 0; i < JOBS; i++) {
+		job[i] = readJob(openJobFile(to_string(i+1)));
+	}
+
     return 0;
 }
 
