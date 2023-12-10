@@ -3,16 +3,12 @@
 
 using namespace std;
 
-
 struct Job{
 	int arrivalTime;
 	int burstTime;
 	int completionTime;
 	int turnAroundTime;
 	int waitingTime;
-	double averageTAT;
-	double averageWT;
-	int interrupt;
 };
 
 ifstream openJobFile(string filename) {
@@ -47,7 +43,9 @@ Job readJob(ifstream file) {
 
 int main() {
 	const int JOBS = 1; //MAX IS 30
-	string text;
+	double averageTAT;
+	double averageWT;
+	int interrupt;
 
 	Job job[JOBS];
 
