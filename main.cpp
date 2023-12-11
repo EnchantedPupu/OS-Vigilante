@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 
+
 using namespace std;
 
 struct Job{
@@ -11,7 +12,7 @@ struct Job{
 	int waitingTime;
 };
 
-ifstream openJobFile(string filename) {
+void openJobFile(ifstream& file, string filename) {
 	filename = "jobs/" + filename + ".csv";
 	//csv format
 	//top first line is Job number, Arrival time
@@ -20,16 +21,14 @@ ifstream openJobFile(string filename) {
 	//second input is CPU Cycle
 
 	//read file
-	ifstream file;
 	file.open(filename.c_str());
 	if (file.fail()) {
 		cout << "Error opening file" << endl;
 		exit(1);
 	}
-	return file;
 }
 
-Job readJob(ifstream file) {
+Job readJob(ifstream& file) {
 	Job job;
 	int CPUcycle = 0;
 
@@ -57,9 +56,11 @@ int main() {
 	int interrupt;
 
 	Job job[JOBS];
+	ifstream file;
 
 	for(int i = 0; i < JOBS; i++) {
-		job[i] = readJob(openJobFile(to_string(i+1)));
+		openJobFile(file, to_string(i+1));
+		job[i] = readJob(file);
 		cout << "Arrival time = " << job[i].arrivalTime << endl;
 		cout << "Burst Time = " << job[i].burstTime << endl;
 
