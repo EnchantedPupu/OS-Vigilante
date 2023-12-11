@@ -14,7 +14,7 @@ struct Job{
 ifstream openJobFile(string filename) {
 	filename = "jobs/" + filename + ".csv";
 	//csv format
-	//top 2 lines are Job number, Arrival time
+	//top first line is Job number, Arrival time
 	//the rest contains 2 inputs
 	//first input is action - 1 for CPU, 2 for I/O
 	//second input is CPU Cycle
@@ -31,12 +31,21 @@ ifstream openJobFile(string filename) {
 
 Job readJob(ifstream file) {
 	Job job;
+	int CPUcycle = 0;
+
 	string text;
+	getline(file, text);
+
+	//Job, Arrival Time
+	job.arrivalTime = stoi(text.substr(text.find(",")+1, text.length())); //get arrival time
+
 	while (getline (file, text)) {
-		// Output the text from the file
-		cout << text;
-		cout << endl;
+
+		//AS OF NOW, THE PROGRAM COMBINES BOTH IO AND CPU CYCLES
+		CPUcycle += stoi(text.substr(text.find(",")+1, text.length()));
+		//cout << text.substr(0, text.find(",")) << endl;
 	}
+	job.burstTime = CPUcycle;
 	return job;
 }
 
@@ -51,6 +60,9 @@ int main() {
 
 	for(int i = 0; i < JOBS; i++) {
 		job[i] = readJob(openJobFile(to_string(i+1)));
+		cout << "Arrival time = " << job[i].arrivalTime << endl;
+		cout << "Burst Time = " << job[i].burstTime << endl;
+
 	}
 
     return 0;
