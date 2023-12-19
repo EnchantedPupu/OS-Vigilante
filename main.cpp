@@ -87,7 +87,7 @@ void roundRobin(vector<Job> &jobs, int timeQuantum) {
 
 
 int main() {
-	const int MAX_JOBS = 1; //MAX IS 30
+	const int MAX_JOBS = 2; //MAX IS 30
 
 	double averageTAT;
 	double averageWT;
@@ -99,7 +99,7 @@ int main() {
 
 	int timeQuanta[] = {5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60};
 
-	for(int i = 1; i < MAX_JOBS; i++) {
+	for(int i = 0; i < MAX_JOBS; i++) {
 		openJobFile(file, to_string(i+1));
 		jobs.push_back(readJob(file)); //read jobs from file and insert into vector
 	}
