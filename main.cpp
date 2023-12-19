@@ -2,15 +2,24 @@
 #include <fstream>
 #include <queue>
 #include <vector>
-
 using namespace std;
 
 struct Job{
+	int jobNumber;
 	int arrivalTime;
 	int burstTime;
+	int tempBurstTime;
 	int completionTime;
 	int turnAroundTime;
 	int waitingTime;
+};
+
+struct FinishedJob{
+	vector<Job> jobs;
+	int timeQuantum;
+	double averageTAT;
+	double averageWT;
+	int intterupts;
 };
 
 void openJobFile(ifstream& file, string filename) {
@@ -42,82 +51,88 @@ void openJobFile(ifstream& file, string filename) {
 	while (getline (file, text)) {
 		//AS OF NOW, THE PROGRAM COMBINES BOTH IO AND CPU CYCLES
 		CPUcycle += stoi(text.substr(text.find(",")+1, text.length()));
-		//cout << text.substr(0, text.find(",")) << endl;
 	}
 
-	job.burstTime = CPUcycle;
+	job.tempBurstTime = CPUcycle; //get job number
 
 	return job;
 } 
 
-
-void roundRobin(vector<Job> &jobs, int timeQuantum) {
+void roundRobin(vector<Job> &jobs, int timeQuantum, vector<Job> &finishedJobs) {
 	queue<Job*> jobQueue;
-    int currentTime = 0;
+    int currentTime = 1;
 
     // Initial load of jobs to queue
     for (auto &job : jobs) {
+		job.burstTime = job.tempBurstTime; //resets burst time to original value
         jobQueue.push(&job);
     }
 
 	while (!jobQueue.empty()) {
         Job *currentJob = jobQueue.front();
-        jobQueue.pop();
+		if(currentJob->arrivalTime > currentTime) { //verify if job not supposed to be executed yet
+			jobQueue.push(currentJob);
+			jobQueue.pop();
+			continue;
+		}
 
 		int timeSlice = min(currentJob->burstTime, timeQuantum); //ensures that the time slice doesn't exceed the remaining burst time
 		currentJob->burstTime -= timeSlice; //subtracts the timeSlice from the remaining burst time of the currentJob
 		currentTime += timeSlice;
-
-		// Update waiting times for other jobs
-		for (auto &job : jobs) {
-			if (&job != currentJob && job.burstTime > 0) {
-				job.waitingTime += timeSlice;
-			}
-		}
 
 		if (currentJob->burstTime > 0) {
 			jobQueue.push(currentJob); // Re-queue if job is not finished
 		} else {
 			currentJob->completionTime = currentTime; // Job completed
 			currentJob->turnAroundTime = currentJob->completionTime - currentJob->arrivalTime;
-			currentJob->waitingTime = currentJob->turnAroundTime - currentJob->burstTime;
+			currentJob->waitingTime = currentJob->turnAroundTime - currentJob->tempBurstTime;
+			finishedJobs.push_back(*currentJob);
 		}
+		jobQueue.pop();
 	}
 }
 
 
 int main() {
-	const int MAX_JOBS = 2; //MAX IS 30
+	const int MAX_JOBS = 30; //MAX IS 30
 
 	double averageTAT;
 	double averageWT;
 	int interrupt;
 
 	vector<Job> jobs;
-	vector<Job> tempJobs;
+	vector<FinishedJob> finishedJobsList;
 	ifstream file;
 
 	int timeQuanta[] = {5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60};
 
 	for(int i = 0; i < MAX_JOBS; i++) {
 		openJobFile(file, to_string(i+1));
-		jobs.push_back(readJob(file)); //read jobs from file and insert into vector
+		Job job = readJob(file);
+		job.jobNumber = i+1;
+		jobs.push_back(job); //read jobs from file and insert into vector
+		file.close();
 	}
-	for(auto &job : jobs) {
-		tempJobs.push_back(job);
-	}
+
 	for(int timeQuantum: timeQuanta) {
-		roundRobin(tempJobs, timeQuantum);
-		cout << "Time Quantum: " << timeQuantum << endl;
-		for(auto &job : tempJobs) {
-			cout << "Job Arrival : " << job.arrivalTime << endl;
-			cout << "Completion Time: " << job.completionTime << endl;
-			cout << "Turn Around Time: " << job.turnAroundTime << endl;
-			cout << "Waiting Time: " << job.waitingTime << endl;
-			cout << endl;
-		}
-		tempJobs = jobs;
+		vector<Job> finishedJobs;
+		roundRobin(jobs, timeQuantum, finishedJobs);
+		FinishedJob finishedJob;
+		finishedJob.jobs = finishedJobs;
+		finishedJob.timeQuantum = timeQuantum;
+		finishedJobsList.push_back(finishedJob);
 	}
+
+	//print results
+	for(FinishedJob finishedJob: finishedJobsList) {
+		cout << "Time Quantum: " << finishedJob.timeQuantum << endl;
+		cout << "Job Number\tArrival Time\tCompletion Time\tTurnaround Time\tWaiting Time" << endl;
+		for(Job job: finishedJob.jobs) {
+			cout << job.jobNumber << "\t\t" << job.arrivalTime << "\t\t" << job.completionTime << "\t\t" << job.turnAroundTime << "\t\t" << job.waitingTime << endl;
+		}
+		cout << endl;
+	}
+	cout << endl;
 
 
     return 0;
