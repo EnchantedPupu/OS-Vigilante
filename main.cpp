@@ -135,32 +135,32 @@ FinishedJob getLowestInterrupts(vector<FinishedJob> finishedJobsList) {
 
 
 int main() {
-    const int MAX_JOBS = 30; // MAX IS 30
+	const int MAX_JOBS = 30; //MAX IS 30
 
-    double averageTAT;
-    double averageWT;
-    int interrupts = 0;
+	double averageTAT;
+	double averageWT;
+	int interrupts;
 
-    vector<Job> jobs;
-    vector<FinishedJob> finishedJobsList;
-    ifstream file;
+	vector<Job> jobs;
+	vector<FinishedJob> finishedJobsList;
+	ifstream file;
 
-    int timeQuanta[] = {5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60};
+	int timeQuanta[] = {5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60};
 
-    for (int i = 0; i < MAX_JOBS; i++) {
-        openJobFile(file, to_string(i + 1));
-        Job job = readJob(file);
-        job.jobNumber = i + 1;
-        jobs.push_back(job); // read jobs from file and insert into vector
-        file.close();
-    }
+	for(int i = 0; i < MAX_JOBS; i++) {
+		openJobFile(file, to_string(i+1));
+		Job job = readJob(file);
+		job.jobNumber = i+1;
+		jobs.push_back(job); //read jobs from file and insert into vector
+		file.close();
+	}
 
     for (int timeQuantum : timeQuanta) {
-        vector<Job> finishedJobs; // temporary vector before putting in finishedJobsList
+        vector<Job> finishedJobs; //temporary vector before putting in finishedJobsList
         roundRobin(jobs, timeQuantum, finishedJobs, interrupts);
 
         double totalTAT = 0, totalWT = 0;
-        for (const Job &job : finishedJobs) {
+        for (const Job& job : finishedJobs) {
             totalTAT += job.turnAroundTime;
             totalWT += job.waitingTime;
         }
@@ -172,50 +172,48 @@ int main() {
         finishedJob.timeQuantum = timeQuantum;
         finishedJob.averageTAT = averageTAT;
         finishedJob.averageWT = averageWT;
-        finishedJob.interupts = interrupts;
+		finishedJob.interupts = interrupts;
         finishedJobsList.push_back(finishedJob);
     }
 
-    // Print results
-    for (FinishedJob finishedJob : finishedJobsList) {
-        cout << "+------------------+--------------+" << endl;
-        cout << "| Time Quantum: " << finishedJob.timeQuantum << " |" << endl;
-        cout << "+-----------+----------+-------------+------------+" << endl;
-        cout << "| Job Number| Burst Time| Comp. Time  | Turn. Time | Wait. Time |" << endl;
-        cout << "+-----------+----------+-------------+------------+" << endl;
-        for (Job job : finishedJob.jobs) {
-            cout << "| " << job.jobNumber << "\t\t| " << job.tempBurstTime << "\t\t| " << job.completionTime
-                 << "\t\t| " << job.turnAroundTime << "\t\t| " << job.waitingTime << "\t\t|" << endl;
-        }
-        cout << "+-----------+----------+-------------+------------+" << endl;
-        cout << "Average Turnaround Time: " << finishedJob.averageTAT << endl;
-        cout << "Average Waiting Time: " << finishedJob.averageWT << endl;
-        cout << "Number of Interrupts: " << finishedJob.interupts << endl;
-        cout << endl;
-    }
+	//print results
+ 	for(FinishedJob finishedJob: finishedJobsList) {
+		cout << "+------------------+" << endl;
+		cout << "| Time Quantum: " << finishedJob.timeQuantum << " |" << endl;
+		cout << "+---------------+---------------+---------------+---------------+---------------+" << endl; 
+		cout << "| Job Number\t| Burst Time\t| Comp. Time\t| Turn. Time\t| Wait. Time\t|" << endl;
+		cout << "+---------------+---------------+---------------+---------------+---------------+" << endl;
+		for(Job job: finishedJob.jobs) {
+			cout << "| " << job.jobNumber << "\t\t| " << job.tempBurstTime << "\t\t| " << job.completionTime << "\t\t| " << job.turnAroundTime << "\t\t| " << job.waitingTime <<"\t\t|" << endl;
+		}
+		cout << "+---------------+---------------+---------------+---------------+---------------+" << endl;
+		cout << "Average Turnaround Time: " << finishedJob.averageTAT << endl;
+		cout << "Average Waiting Time: " << finishedJob.averageWT << endl;
+		cout << "Number of Interrupts: " << finishedJob.interupts << endl;
+		cout << endl;
+	}
+	cout << endl; 
 
-    cout << endl;
+	FinishedJob data;
 
-    FinishedJob data;
+	cout << "Statistic: " << endl;
+	cout << "Lowest Turnaround Time: ";
+	data = getLowestTAT(finishedJobsList);
+	cout << data.averageTAT << endl;
+	cout << "Time Quantum: " << data.timeQuantum << endl;
+	cout << endl;
+	data = getLowestWT(finishedJobsList);
+	cout << "Lowest Waiting Time: ";
+	cout << data.averageWT << endl;
+	cout << "Time Quantum: " << data.timeQuantum << endl;
+	cout << endl;
+	data = getLowestInterrupts(finishedJobsList);
+	cout << "Lowest Interrupts: ";
+	cout << data.interupts << endl;
+	cout << "Time Quantum: " << data.timeQuantum << endl;
 
-    cout << "Statistic: " << endl;
-    cout << "Lowest Turnaround Time: ";
-    data = getLowestTAT(finishedJobsList);
-    cout << data.averageTAT << endl;
-    cout << "Time Quantum: " << data.timeQuantum << endl;
-    cout << endl;
-    data = getLowestWT(finishedJobsList);
-    cout << "Lowest Waiting Time: ";
-    cout << data.averageWT << endl;
-    cout << "Time Quantum: " << data.timeQuantum << endl;
-    cout << endl;
-    data = getLowestInterrupts(finishedJobsList);
-    cout << "Lowest Interrupts: ";
-    cout << data.interupts << endl;
-    cout << "Time Quantum: " << data.timeQuantum << endl;
-    cout << endl;
+
 
     return 0;
 }
-
 
