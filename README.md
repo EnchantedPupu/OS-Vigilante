@@ -7,7 +7,7 @@ This repository contains our group project for the TMF2234 Operating System cour
 
 ## Team Members
 - NIELS EVANT ROBORT
-- 
+- WAN HANI SHAHRIN BIN WAN AHMAD SHUKRI
 
 ## Project Overview
 OS-Vigilante is a project developed for the TMF2234 Operating System course. The primary focus of this project is the implementation of the Round Robin scheduling algorithm. Given a file with a list of jobs, our system will schedule and execute these jobs based on the Round Robin algorithm, ensuring fair CPU time allocation and efficient process management. This project serves as a practical exploration of process scheduling in operating systems, demonstrating the impact of different scheduling algorithms on system performance.
