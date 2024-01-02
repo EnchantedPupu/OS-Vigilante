@@ -24,9 +24,10 @@ OS-Vigilante is a project developed for the TMF2234 Operating System course. The
 ## Installation
 1. Make sure your compiler running on latest version
 2. Else, add the following commands to your IDE
-   Dev C++ --> Tools -> Compiler options -> Check the ""Add the following commands when calling the compiler"
-            -> Add the commands "-std=c++11"
-3. Compile and run.
+   
+   Dev C++
+   --> Tools -> Compiler options -> Check the ""Add the following commands when calling the compiler" -> Add the commands "-std=c++11"
+4. Compile and run.
 
 ## License
 This project is licensed under the MIT License. See the LICENSE.md file for details.
